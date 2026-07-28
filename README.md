@@ -83,3 +83,11 @@ Validar los tipos y generar la versión de producción:
 ```bash
 npm run build
 ```
+
+## Aplicación desplegada
+
+https://reto-tecnico-prestamype.netlify.app/
+
+## Repositorio
+
+https://github.com/JonatanCuri07/reto-tecnico-prestamype.git
