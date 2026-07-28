@@ -66,14 +66,14 @@ const changeDirection = () => {
 </script>
 
 <template>
-  <section class="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-xl">
+  <section class="w-full overflow-hidden bg-white lg:max-w-md lg:rounded-xl lg:shadow-xl">
     <ExchangeRates
       :purchase-price="purchasePrice"
       :sale-price="salePrice"
       :active-rate="activeRate"
     />
 
-    <div class="px-8 py-8">
+    <div class="px-6 py-8 sm:px-8">
       <div class="relative flex flex-col gap-4">
         <CurrencyField
           v-model="sourceAmount"

@@ -13,9 +13,9 @@ const formatRate = (value: number): string => {
 <template>
   <div class="grid grid-cols-2 border-b border-gray-200 text-center">
     <div
-      class="px-4 py-4"
+      class="border-b-2 border-transparent px-4 py-4"
       :class="{
-        'border-b-2 border-violet-600 text-violet-600': activeRate === 'purchase',
+        'border-violet-600 text-violet-600': activeRate === 'purchase',
         'text-gray-500': activeRate !== 'purchase',
       }"
     >
@@ -27,9 +27,9 @@ const formatRate = (value: number): string => {
     </div>
 
     <div
-      class="px-4 py-4"
+      class="border-b-2 border-transparent px-4 py-4"
       :class="{
-        'border-b-2 border-violet-600 text-violet-600': activeRate === 'sale',
+        'border-violet-600 text-violet-600': activeRate === 'sale',
         'text-gray-500': activeRate !== 'sale',
       }"
     >
