@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+
 import syncIcon from '@/assets/icons/sync.svg'
 import CurrencyField from '@/components/CurrencyField.vue'
 import ExchangeRates from '@/components/ExchangeRates.vue'
@@ -11,8 +12,11 @@ const props = defineProps<{
 
 type ExchangeDirection = 'usd-to-pen' | 'pen-to-usd'
 
+const MAX_AMOUNT = 999_999.99
+
 const direction = ref<ExchangeDirection>('usd-to-pen')
-const sourceAmount = ref('1000')
+const sourceAmount = ref('')
+const convertedAmount = ref('0.00')
 
 const isDollarToSoles = computed(() => {
   return direction.value === 'usd-to-pen'
@@ -20,24 +24,6 @@ const isDollarToSoles = computed(() => {
 
 const activeRate = computed<'purchase' | 'sale'>(() => {
   return isDollarToSoles.value ? 'purchase' : 'sale'
-})
-
-const convertedAmount = computed(() => {
-  const amount = Number(sourceAmount.value)
-
-  if (
-    sourceAmount.value === '' ||
-    !Number.isFinite(amount) ||
-    amount < 0 ||
-    props.purchasePrice <= 0 ||
-    props.salePrice <= 0
-  ) {
-    return '0.00'
-  }
-
-  const result = isDollarToSoles.value ? amount * props.purchasePrice : amount / props.salePrice
-
-  return result.toFixed(2)
 })
 
 const sourceCurrency = computed(() => {
@@ -56,13 +42,59 @@ const targetSymbol = computed(() => {
   return isDollarToSoles.value ? 'S/' : '$'
 })
 
-const changeDirection = () => {
-  const previousResult = convertedAmount.value
+const canCalculate = computed(() => {
+  const amount = Number(sourceAmount.value)
 
+  return (
+    sourceAmount.value !== '' &&
+    Number.isFinite(amount) &&
+    amount > 0 &&
+    amount <= MAX_AMOUNT &&
+    props.purchasePrice > 0 &&
+    props.salePrice > 0
+  )
+})
+
+const resetConvertedAmount = () => {
+  convertedAmount.value = '0.00'
+}
+
+const calculateExchange = () => {
+  const amount = Number(sourceAmount.value)
+
+  if (
+    sourceAmount.value === '' ||
+    !Number.isFinite(amount) ||
+    amount < 0 ||
+    amount > MAX_AMOUNT ||
+    props.purchasePrice <= 0 ||
+    props.salePrice <= 0
+  ) {
+    resetConvertedAmount()
+    return
+  }
+
+  const result = isDollarToSoles.value ? amount * props.purchasePrice : amount / props.salePrice
+
+  convertedAmount.value = result.toFixed(2)
+}
+
+const changeDirection = () => {
   direction.value = isDollarToSoles.value ? 'pen-to-usd' : 'usd-to-pen'
 
-  sourceAmount.value = previousResult
+  resetConvertedAmount()
 }
+
+watch(sourceAmount, () => {
+  resetConvertedAmount()
+})
+
+watch(
+  () => [props.purchasePrice, props.salePrice],
+  () => {
+    resetConvertedAmount()
+  },
+)
 </script>
 
 <template>
@@ -79,7 +111,9 @@ const changeDirection = () => {
           v-model="sourceAmount"
           :currency-name="sourceCurrency"
           :symbol="sourceSymbol"
+          :max-value="MAX_AMOUNT"
           label="Envías"
+          placeholder="0.00"
         />
 
         <button
@@ -96,13 +130,16 @@ const changeDirection = () => {
           :currency-name="targetCurrency"
           :symbol="targetSymbol"
           label="Recibes"
+          placeholder="0.00"
           readonly
         />
       </div>
 
       <button
         type="button"
-        class="mt-10 w-full rounded-md bg-violet-600 px-4 py-3 font-medium text-white transition hover:bg-violet-700"
+        :disabled="!canCalculate"
+        class="mt-10 w-full rounded-md bg-violet-600 px-4 py-3 font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+        @click="calculateExchange"
       >
         Iniciar operación
       </button>

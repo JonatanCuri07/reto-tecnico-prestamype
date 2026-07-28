@@ -1,4 +1,8 @@
-rmite realizar conversiones entre dólares y soles utilizando las tasas de compra y venta obtenidas desde Firebase. La aplicación escucha los cambios del documento en tiempo real, por lo que las tasas se actualizan sin necesidad de recargar la página.
+# Cotizador para cambio de moneda
+
+Aplicación web desarrollada como parte del reto técnico de Prestamype.
+
+Permite realizar conversiones entre dólares y soles utilizando las tasas de compra y venta obtenidas desde Firebase. La aplicación escucha los cambios del documento en tiempo real, por lo que las tasas se actualizan sin necesidad de recargar la página.
 
 ## Funcionalidades
 
